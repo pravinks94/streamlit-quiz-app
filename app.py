@@ -1,19 +1,28 @@
+import streamlit as st
 from app_components.logger import setup_logger
 from app_components.database import Database
 from app_components.question_uploader import QuestionUploader
 from app_components.test_taker import TestTaker
 from app_components.result_viewer import ResultViewer
 
+
+
 # Initialize logger
 logger = setup_logger()
 
 # Initialize database
-db = Database()
-db.init_db()
-db.init_results_table()
+try:
+    db = Database()
+    db.init_db()
+    db.init_results_table()
+except Exception as e:
+    logger.error(f"Error initializing database: {e}")
+    st.error("Failed to connect to the database. Please check the logs for more details.")
+    exit()
 
 # App layout
 st.title("Azure Certification Learning App")
+
 
 menu = ["Upload Questions", "Take Test", "View Results"]
 choice = st.sidebar.selectbox("Menu", menu)

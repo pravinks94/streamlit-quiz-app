@@ -1,14 +1,23 @@
-import sqlite3
+import psycopg2
+import os
 
 class Database:
     def __init__(self):
-        self.db_name = 'questions.db'
+        self.db_name = os.environ.get("POSTGRES_DB", "your_db_name")
+        self.db_user = os.environ.get("POSTGRES_USER", "your_db_user")
+        self.db_password = os.environ.get("POSTGRES_PASSWORD", "your_db_password")
+        self.db_host = os.environ.get("POSTGRES_HOST", "localhost")
+        self.db_port = os.environ.get("POSTGRES_PORT", "5432")
 
     def init_db(self):
-        conn = sqlite3.connect(self.db_name)
+        conn = psycopg2.connect(database=self.db_name,
+                                user=self.db_user,
+                                password=self.db_password,
+                                host=self.db_host,
+                                port=self.db_port)
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS questions (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id SERIAL PRIMARY KEY,
                         category TEXT,
                         subcategory TEXT,
                         level TEXT,
@@ -20,10 +29,14 @@ class Database:
         conn.close()
 
     def init_results_table(self):
-        conn = sqlite3.connect(self.db_name)
+        conn = psycopg2.connect(database=self.db_name,
+                                user=self.db_user,
+                                password=self.db_password,
+                                host=self.db_host,
+                                port=self.db_port)
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS results (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id SERIAL PRIMARY KEY,
                         user TEXT,
                         question_id INTEGER,
                         selected_option TEXT,
